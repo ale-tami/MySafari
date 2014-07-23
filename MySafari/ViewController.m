@@ -17,6 +17,8 @@
 @property (weak, nonatomic) IBOutlet UINavigationItem *myNavBar;
 
 @property (weak, nonatomic) UIButton *clearButton;
+@property (strong, nonatomic) UIActivityIndicatorView *spinner;
+
 
 @end
 
@@ -47,7 +49,16 @@
     [self.clearButton addTarget:self action:@selector(clearUrl) forControlEvents:UIControlEventTouchUpInside];
     
     [self.myURLTextField addSubview:self.clearButton];
+    
+    
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+                                        UIActivityIndicatorViewStyleGray];
+    self.spinner.center = self.myWebView.center;
+    self.spinner.hidesWhenStopped = YES;
+   // self.spinner.hidden = NO;
 
+    [self.view addSubview:self.spinner];
+    [self.view bringSubviewToFront:self.spinner];
 }
 
 
@@ -56,27 +67,29 @@
     self.myURLTextField.text = @"";
 }
 
-
-- (void) checkWebPageStateForButtons
-{
-    if ([self.myWebView canGoBack]) {
-        [self.backButton setEnabled:TRUE];
-    }else{
-        [self.backButton setEnabled:FALSE];
-    }
-    
-    if ([self.myWebView canGoForward]) {
-        [self.forwardButton setEnabled:TRUE];
-    }else{
-        [self.forwardButton setEnabled:FALSE];
-    }
-    
-}
+//
+//- (void) checkWebPageStateForButtons
+//{
+//    
+//    if ([self.myWebView canGoBack]) {
+//        [self.backButton setEnabled:TRUE];
+//    }else{
+//        [self.backButton setEnabled:FALSE];
+//    }
+//    
+//    if ([self.myWebView canGoForward]) {
+//        [self.forwardButton setEnabled:TRUE];
+//    }else{
+//        [self.forwardButton setEnabled:FALSE];
+//    }
+//    
+//}
 
 
 // Disgustingly copyed and pasted
 - (void) loadUrlString:(NSString *)urlString
 {
+    
     NSURL *url = nil;
     
     if ([urlString hasPrefix:@"http://"]){
@@ -87,7 +100,7 @@
     
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     [self.myWebView loadRequest:urlRequest];
-    [self checkWebPageStateForButtons];
+    //[self checkWebPageStateForButtons];
     
 }
 
@@ -124,6 +137,11 @@
     [self.myWebView goBack];
 }
 
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    [self.spinner startAnimating];
+}
+
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
 //    self.myURLTextField.text =  [NSString stringWithContentsOfURL: webView.request.URL.absoluteString
@@ -133,7 +151,20 @@
     
     self.myNavBar.title = [webView stringByEvaluatingJavaScriptFromString:@"document.title"];
     
-    [self checkWebPageStateForButtons];
+    if ([self.myWebView canGoBack]) {
+        [self.backButton setEnabled:TRUE];
+    }else{
+        [self.backButton setEnabled:FALSE];
+    }
+    
+    if ([self.myWebView canGoForward]) {
+        [self.forwardButton setEnabled:TRUE];
+    }else{
+        [self.forwardButton setEnabled:FALSE];
+    }
+
+    
+    [self.spinner stopAnimating];
 
 }
 
@@ -147,8 +178,8 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    
-    [self loadUrlString:textField.text];
+    [self performSelectorInBackground:@selector(loadUrlString:)withObject:textField.text];
+  //  [self loadUrlString:textField.text];
     [textField resignFirstResponder];
     
     return YES;
