@@ -8,7 +8,10 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController () <UIWebViewDelegate, UITextFieldDelegate>
+
+@property (weak, nonatomic) IBOutlet UIWebView *myWebView;
+@property (weak, nonatomic) IBOutlet UITextField *myURLTextField;
 
 @end
 
@@ -17,7 +20,33 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    //delegates set via storyboard
+    
+    [self.myURLTextField setKeyboardType:UIKeyboardTypeURL];
+    [self.myURLTextField  setReturnKeyType:UIReturnKeyGo];
+	
+}
+
+
+// Disgustingly copyed and pasted
+- (void) loadUrlString:(NSString *)urlString
+{
+    
+    NSURL *url = [NSURL URLWithString:[@"http://" stringByAppendingString:urlString]];
+    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
+    [self.myWebView loadRequest:urlRequest];
+    
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    
+    [self loadUrlString:textField.text];
+    
+    [textField resignFirstResponder];
+    
+    return YES;
 }
 
 - (void)didReceiveMemoryWarning
