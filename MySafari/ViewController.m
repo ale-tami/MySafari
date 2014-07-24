@@ -67,23 +67,23 @@
     self.myURLTextField.text = @"";
 }
 
-//
-//- (void) checkWebPageStateForButtons
-//{
-//    
-//    if ([self.myWebView canGoBack]) {
-//        [self.backButton setEnabled:TRUE];
-//    }else{
-//        [self.backButton setEnabled:FALSE];
-//    }
-//    
-//    if ([self.myWebView canGoForward]) {
-//        [self.forwardButton setEnabled:TRUE];
-//    }else{
-//        [self.forwardButton setEnabled:FALSE];
-//    }
-//    
-//}
+
+- (void) checkWebPageStateForButtons
+{
+    
+    if ([self.myWebView canGoBack]) {
+        [self.backButton setEnabled:TRUE];
+    }else{
+        [self.backButton setEnabled:FALSE];
+    }
+    
+    if ([self.myWebView canGoForward]) {
+        [self.forwardButton setEnabled:TRUE];
+    }else{
+        [self.forwardButton setEnabled:FALSE];
+    }
+    
+}
 
 
 // Disgustingly copyed and pasted
@@ -100,7 +100,7 @@
     
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     [self.myWebView loadRequest:urlRequest];
-    //[self checkWebPageStateForButtons];
+    [self checkWebPageStateForButtons];
     
 }
 
@@ -120,21 +120,25 @@
 - (IBAction)onReloadButtonPressed:(id)sender
 {
     [self.myWebView reload];
+    [self checkWebPageStateForButtons];
 }
 
 - (IBAction)onStopLoadingButtonPressed:(id)sender
 {
     [self.myWebView stopLoading];
+    [self checkWebPageStateForButtons];
 }
 
 - (IBAction)onForwardButtonPressed:(id)sender
 {
     [self.myWebView goForward];
+    [self checkWebPageStateForButtons];
 }
 
 - (IBAction)onBackButtonPressed:(id)sender
 {
     [self.myWebView goBack];
+    [self checkWebPageStateForButtons];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView
@@ -151,20 +155,23 @@
     
     self.myNavBar.title = [webView stringByEvaluatingJavaScriptFromString:@"document.title"];
     
-    if ([self.myWebView canGoBack]) {
-        [self.backButton setEnabled:TRUE];
-    }else{
-        [self.backButton setEnabled:FALSE];
-    }
-    
-    if ([self.myWebView canGoForward]) {
-        [self.forwardButton setEnabled:TRUE];
-    }else{
-        [self.forwardButton setEnabled:FALSE];
-    }
+//    if ([self.myWebView canGoBack]) {
+//        [self.backButton setEnabled:TRUE];
+//    }else{
+//        [self.backButton setEnabled:FALSE];
+//    }
+//    
+//    if ([self.myWebView canGoForward]) {
+//        [self.forwardButton setEnabled:TRUE];
+//    }else{
+//        [self.forwardButton setEnabled:FALSE];
+//    }
 
-    
     [self.spinner stopAnimating];
+    
+    [self checkWebPageStateForButtons];
+    
+
 
 }
 
@@ -178,8 +185,8 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [self performSelectorInBackground:@selector(loadUrlString:)withObject:textField.text];
-  //  [self loadUrlString:textField.text];
+   // [self performSelectorInBackground:@selector(loadUrlString:)withObject:textField.text];
+    [self loadUrlString:textField.text];
     [textField resignFirstResponder];
     
     return YES;
